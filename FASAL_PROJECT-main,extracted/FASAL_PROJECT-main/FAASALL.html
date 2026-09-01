@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAASALL | AI Crop Advisor</title>
+    <!-- FAASALL — Fasal Agriculture Advisory System for All Landholdings -->
+    <!-- Hand-crafted with care for India's farmers -->
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- React & Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+
+    <style>
+        /* ═══════════════════════════════════════ */
+        /* CSS Design System & Global Styles       */
+        /* ═══════════════════════════════════════ */
+        :root {
+            /* Dark cinematic palette */
+            --bg-base: #060f1a;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --border-card: rgba(255, 255, 255, 0.07);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            /* Accent colors */
+            --emerald: #34d399;
+            --gold: #f0b429;
+            --sky: #38bdf8;
+            --orange: #e8772e;
+            --teal: #2dd4bf;
+            --red: #f87171;
+            
+            /* Gradients */
+            --grad-emerald-sky: linear-gradient(135deg, #34d399 0%, #2dd4bf 50%, #38bdf8 100%);
+            --grad-dark-terraced: linear-gradient(to bottom, #051622 0%, #060f1a 50%, #0a1128 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: var(--grad-dark-terraced);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* Utility Classes                         */
+        /* ═══════════════════════════════════════ */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 1rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .gradient-text {
+            background: var(--grad-emerald-sky);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+            margin: 4rem 0;
+            width: 100%;
+        }
+
+        /* Form elements */
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus {
+            border-color: var(--emerald);
+        }
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--emerald);
+        }
+
+        button.btn-primary {
+            background: var(--grad-emerald-sky);
+            color: #000;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        button.btn-primary:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+        button.btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Nav */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .lang-switch select {
+            width: auto;
+            padding: 0.4rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* Layouts & Components                    */
+        /* ═══════════════════════════════════════ */
+        
+        .hero {
+            padding: 5rem 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        @media(max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 3rem 0;
+                text-align: center;
+            }
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--emerald);
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(52, 211, 153, 0.2);
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+        @media(max-width: 768px) { .hero h1 { font-size: 2.5rem; } }
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--emerald);
+            border-radius: 50%;
+            position: relative;
+        }
+        .live-dot::after {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            border-radius: 50%;
+            border: 2px solid var(--emerald);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        @media(max-width: 768px) { .stats-row { justify-content: center; flex-wrap: wrap; } }
+        .stat-item h4 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+        }
+        .stat-item p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        @media(max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        /* Loader */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .score-circle {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-family: 'Outfit';
+        }
+        .score-excellent { background: rgba(52, 211, 153, 0.1); color: var(--emerald); border: 2px solid var(--emerald); }
+        .score-good { background: rgba(240, 180, 41, 0.1); color: var(--gold); border: 2px solid var(--gold); }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-risk-low { background: rgba(52, 211, 153, 0.1); color: var(--emerald); }
+        .badge-risk-med { background: rgba(240, 180, 41, 0.1); color: var(--gold); }
+        .badge-risk-high { background: rgba(248, 113, 113, 0.1); color: var(--red); }
+
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-8 { margin-top: 2rem; }
+        .text-center { text-align: center; }
+        .text-sm { font-size: 0.875rem; }
+        .text-muted { color: var(--text-muted); }
+        
+        /* Seasonal Calendar */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(12, 1fr);
+            gap: 2px;
+            background: var(--bg-card);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+        .cal-header { font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 0.5rem 0; }
+        .cal-row { display: contents; }
+        .cal-label { padding: 0.5rem; font-weight: 500; font-size: 0.875rem; display: flex; align-items: center; }
+        .cal-cell {
+            background: rgba(255,255,255,0.02);
+            height: 30px;
+            margin: auto 0;
+            border-radius: 2px;
+            position: relative;
+        }
+        .cal-sow { background: var(--gold); opacity: 0.8; }
+        .cal-tend { background: var(--emerald); opacity: 0.6; }
+        .cal-harvest { background: var(--orange); opacity: 0.8; }
+
+        /* Icon Wrapper */
+        .icon-box {
+            width: 40px; height: 40px;
+            border-radius: 0.5rem;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.05);
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // ═══════════════════════════════════════
+        // Imports & Setup
+        // ═══════════════════════════════════════
+        const { useState, useEffect, useMemo, useCallback } = React;
+        const { 
+            LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+            RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis 
+        } = Recharts;
+
+        // ═══════════════════════════════════════
+        // Translations (i18n)
+        // ═══════════════════════════════════════
+        const i18n = {
+            en: {
+                brand: "FASAL",
+                heroBadge: "AI-Powered Farm Advisory",
+                heroTitle: "Know what to sow, before you sow it.",
+                heroSub: "Data-driven crop recommendations based on your soil, weather, and market trends.",
+                ctaStart: "Get Recommendation",
+                statsFarmers: "12,400+", statsFarmersLbl: "Farmers Empowered",
+                statsCrops: "10", statsCropsLbl: "Crops Analyzed",
+                statsDistricts: "180+", statsDistrictsLbl: "Districts Covered",
+                
+                navHome: "Home", navAI: "AI Advisor", navWeather: "Weather", navMarket: "Market", navCalc: "Calculator",
+                
+                secAI: "AI Recommendation Engine",
+                secAI_sub: "Enter your farm details to get scientifically matched crops.",
+                lblState: "Select State", lblDistrict: "Select District",
+                lblSoil: "Soil Type", lblPh: "Soil pH", lblRain: "Rainfall (mm)",
+                lblSeason: "Season", lblIrrigation: "Irrigation Available",
+                lblN: "Nitrogen (N)", lblP: "Phosphorus (P)", lblK: "Potassium (K)",
+                btnRunAI: "Run Analysis", btnRunning: "Analyzing...",
+                
+                resTop: "Top Matches for Your Farm",
+                resScore: "Match Score", resProfit: "Est. Net Profit", resRisk: "Risk Level",
+                resDemand: "Market Demand", resTip: "Pro Tip",
+                
+                secWeather: "Local Weather & Forecast",
+                secWeather_sub: "7-day outlook for optimal farming operations.",
+                weatherTemp: "Temp", weatherHum: "Humidity", weatherWind: "Wind",
+                
+                secSoil: "Soil Health Dashboard",
+                secSoil_sub: "Estimated macro-nutrients and pH based on ISRIC soil grids.",
+                
+                secMarket: "Market Trends",
+                secMarket_sub: "Live commodity price trends to plan your harvest sales.",
+                
+                secCal: "Seasonal Calendar",
+                secCal_sub: "Optimal timing for major crops.",
+                legSow: "Sow", legTend: "Tend", legHarvest: "Harvest",
+                
+                secCalc: "Profitability Calculator",
+                lblLand: "Land Size (Acres)", lblYield: "Expected Yield (kg/acre)", 
+                lblPrice: "Expected Price (₹/kg)", lblCost: "Input Cost (₹/acre)",
+                calcGross: "Gross Return", calcNet: "Net Profit", calcROI: "ROI",
+                
+                aboutTitle: "Why Fasal?",
+                feat1: "Hyper-local Weather", feat1d: "Pinpoint accuracy for your district.",
+                feat2: "Soil Grid Data", feat2d: "Satellite-backed soil estimates.",
+                feat3: "Market Intel", feat3d: "Live commodity trends.",
+                feat4: "Risk Analysis", feat4d: "Pest & climate risk factoring.",
+                feat5: "Crop Rotation", feat5d: "Sustainable farming advice.",
+                feat6: "Multi-lingual", feat6d: "Accessible in local languages.",
+                disclaimer: "Disclaimer: Recommendations are AI-generated based on available public data. Always consult local agronomists.",
+                
+                seasonKharif: "Kharif (Monsoon)", seasonRabi: "Rabi (Winter)", seasonZaid: "Zaid (Summer)"
+            },
+            hi: {
+                brand: "फसल",
+                heroBadge: "एआई-संचालित कृषि सलाहकार",
+                heroTitle: "बोने से पहले जानिए, क्या बोना सही रहेगा।",
+                heroSub: "आपकी मिट्टी, मौसम और बाजार के रुझान के आधार पर डेटा-संचालित फसल की सिफारिशें।",
+                ctaStart: "सिफारिश प्राप्त करें",
+                statsFarmers: "12,400+", statsFarmersLbl: "सशक्त किसान",
+                statsCrops: "10", statsCropsLbl: "फसलों का विश्लेषण",
+                statsDistricts: "180+", statsDistrictsLbl: "जिले कवर किए गए",
+                
+                navHome: "होम", navAI: "एआई सलाहकार", navWeather: "मौसम", navMarket: "बाजार", navCalc: "कैलकुलेटर",
+                
+                secAI: "एआई सिफारिश इंजन",
+                secAI_sub: "वैज्ञानिक रूप से मेल खाने वाली फसलें प्राप्त करने के लिए अपने खेत का विवरण दर्ज करें।",
+                lblState: "राज्य चुनें", lblDistrict: "जिला चुनें",
+                lblSoil: "मिट्टी का प्रकार", lblPh: "मिट्टी का पीएच (pH)", lblRain: "वर्षा (मिमी)",
+                lblSeason: "मौसम", lblIrrigation: "सिंचाई उपलब्ध है",
+                lblN: "नाइट्रोजन (N)", lblP: "फास्फोरस (P)", lblK: "पोटेशियम (K)",
+                btnRunAI: "विश्लेषण चलाएं", btnRunning: "विश्लेषण हो रहा है...",
+                
+                resTop: "आपके खेत के लिए शीर्ष फसलें",
+                resScore: "मैच स्कोर", resProfit: "अनुमानित शुद्ध लाभ", resRisk: "जोखिम स्तर",
+                resDemand: "बाजार की मांग", resTip: "प्रो टिप",
+                
+                secWeather: "स्थानीय मौसम और पूर्वानुमान",
+                secWeather_sub: "इष्टतम कृषि कार्यों के लिए 7-दिन का दृष्टिकोण।",
+                weatherTemp: "तापमान", weatherHum: "नमी", weatherWind: "हवा",
+                
+                secSoil: "मृदा स्वास्थ्य डैशबोर्ड",
+                secSoil_sub: "ISRIC मृदा ग्रिड के आधार पर अनुमानित मैक्रो-पोषक तत्व और पीएच।",
+                
+                secMarket: "बाजार के रुझान",
+                secMarket_sub: "अपनी फसल की बिक्री की योजना बनाने के लिए लाइव कमोडिटी मूल्य रुझान।",
+                
+                secCal: "मौसमी कैलेंडर",
+                secCal_sub: "प्रमुख फसलों के लिए इष्टतम समय।",
+                legSow: "बोना", legTend: "देखभाल", legHarvest: "कटाई",
+                
+                secCalc: "लाभप्रदता कैलकुलेटर",
+                lblLand: "भूमि का आकार (एकड़)", lblYield: "अपेक्षित उपज (किग्रा/एकड़)", 
+                lblPrice: "अपेक्षित मूल्य (₹/किग्रा)", lblCost: "लागत (₹/एकड़)",
+                calcGross: "सकल रिटर्न", calcNet: "शुद्ध लाभ", calcROI: "आरओआई",
+                
+                aboutTitle: "फसल क्यों?",
+                feat1: "अति-स्थानीय मौसम", feat1d: "आपके जिले के लिए सटीक।",
+                feat2: "मृदा ग्रिड डेटा", feat2d: "उपग्रह समर्थित मिट्टी अनुमान।",
+                feat3: "बाजार की जानकारी", feat3d: "लाइव कमोडिटी रुझान।",
+                feat4: "जोखिम विश्लेषण", feat4d: "कीट और जलवायु जोखिम फैक्टरिंग।",
+                feat5: "फसल चक्रण", feat5d: "सतत कृषि सलाह।",
+                feat6: "बहुभाषी", feat6d: "स्थानीय भाषाओं में सुलभ।",
+                disclaimer: "अस्वीकरण: सिफारिशें उपलब्ध सार्वजनिक डेटा के आधार पर एआई-जनित हैं। हमेशा स्थानीय कृषिविदों से सलाह लें।",
+                
+                seasonKharif: "खरीफ (मानसून)", seasonRabi: "रबी (सर्दियों)", seasonZaid: "ज़ैद (गर्मी)"
+            },
+            mr: {
+                brand: "फसल",
+                heroBadge: "एआय-सक्षम कृषी सल्लागार",
+                heroTitle: "पेरण्याआधी जाणून घ्या, काय पेरणे योग्य आहे.",
+                heroSub: "तुमची माती, हवामान आणि बाजाराच्या ट्रेंडवर आधारित डेटा-चालित पीक शिफारसी.",
+                ctaStart: "शिफारस मिळवा",
+                statsFarmers: "12,400+", statsFarmersLbl: "सशक्त शेतकरी",
+                statsCrops: "10", statsCropsLbl: "पिकांचे विश्लेषण",
+                statsDistricts: "180+", statsDistrictsLbl: "जिल्हे समाविष्ट",
+                
+                navHome: "मुख्यपृष्ठ", navAI: "एआय सल्लागार", navWeather: "हवामान", navMarket: "बाजार", navCalc: "कॅल्क्युलेटर",
+                
+                secAI: "एआय शिफारस इंजिन",
+                secAI_sub: "वैज्ञानिकदृष्ट्या जुळणारी पिके मिळवण्यासाठी तुमच्या शेताचा तपशील प्रविष्ट करा.",
+                lblState: "राज्य निवडा", lblDistrict: "जिल्हा निवडा",
+                lblSoil: "मातीचा प्रकार", lblPh: "मातीचा सामू (pH)", lblRain: "पाऊस (मिमी)",
+                lblSeason: "हंगाम", lblIrrigation: "सिंचन उपलब्ध",
+                lblN: "नत्र (N)", lblP: "स्फुरद (P)", lblK: "पालाश (K)",
+                btnRunAI: "विश्लेषण सुरू करा", btnRunning: "विश्लेषण करत आहे...",
+                
+                resTop: "तुमच्या शेतासाठी सर्वोत्तम पिके",
+                resScore: "मॅच स्कोअर", resProfit: "अंदाजित निव्वळ नफा", resRisk: "धोका पातळी",
+                resDemand: "बाजारातील मागणी", resTip: "प्रो टीप",
+                
+                secWeather: "स्थानिक हवामान आणि अंदाज",
+                secWeather_sub: "इष्टतम शेती कार्यांसाठी 7-दिवसांचा दृष्टिकोन.",
+                weatherTemp: "तापमान", weatherHum: "आर्द्रता", weatherWind: "वारा",
+                
+                secSoil: "मृदा आरोग्य डॅशबोर्ड",
+                secSoil_sub: "ISRIC माती ग्रिडवर आधारित अंदाजित मॅक्रो-पोषक तत्वे आणि सामू.",
+                
+                secMarket: "बाजाराचा कल",
+                secMarket_sub: "तुमच्या कापणीच्या विक्रीचे नियोजन करण्यासाठी थेट कमोडिटी किमतीचे ट्रेंड.",
+                
+                secCal: "हंगामी कॅलेंडर",
+                secCal_sub: "प्रमुख पिकांसाठी इष्टतम वेळ.",
+                legSow: "पेरणी", legTend: "निगा", legHarvest: "कापणी",
+                
+                secCalc: "नफा कॅल्क्युलेटर",
+                lblLand: "जमिनीचा आकार (एकर)", lblYield: "अपेक्षित उत्पादन (किलो/एकर)", 
+                lblPrice: "अपेक्षित किंमत (₹/किलो)", lblCost: "खर्च (₹/एकर)",
+                calcGross: "एकूण परतावा", calcNet: "निव्वळ नफा", calcROI: "आरओआय",
+                
+                aboutTitle: "फसल का?",
+                feat1: "अति-स्थानिक हवामान", feat1d: "तुमच्या जिल्ह्यासाठी अचूक.",
+                feat2: "मृदा ग्रिड डेटा", feat2d: "उपग्रह-समर्थित मातीचे अंदाज.",
+                feat3: "बाजार माहिती", feat3d: "थेट कमोडिटी ट्रेंड.",
+                feat4: "धोका विश्लेषण", feat4d: "कीड आणि हवामान जोखीम फॅक्टरिंग.",
+                feat5: "पीक रोटेशन", feat5d: "शाश्वत शेतीचा सल्ला.",
+                feat6: "बहुभाषिक", feat6d: "स्थानिक भाषांमध्ये उपलब्ध.",
+                disclaimer: "अस्वीकरण: शिफारसी उपलब्ध सार्वजनिक डेटाच्या आधारे एआय-व्युत्पन्न आहेत. नेहमी स्थानिक कृषी तज्ञांचा सल्ला घ्या.",
+                
+                seasonKharif: "खरीप (पावसाळा)", seasonRabi: "रब्बी (हिवाळा)", seasonZaid: "उन्हाळी"
+            }
+        };
+
+        // ═══════════════════════════════════════
+        // Data Mocks (Locations & Crops)
+        // ═══════════════════════════════════════
+        const locationsData = {
+            "Maharashtra": [
+                { name: "Pune", lat: 18.5204, lon: 73.8567 },
+                { name: "Nagpur", lat: 21.1458, lon: 79.0882 },
+                { name: "Nashik", lat: 20.0110, lon: 73.7903 },
+                { name: "Latur", lat: 18.4088, lon: 76.5604 }
+            ],
+            "Madhya Pradesh": [
+                { name: "Indore", lat: 22.7196, lon: 75.8577 },
+                { name: "Bhopal", lat: 23.2599, lon: 77.4126 },
+                { name: "Jabalpur", lat: 23.1815, lon: 79.9864 }
+            ],
+            "Rajasthan": [
+                { name: "Jaipur", lat: 26.9124, lon: 75.7873 },
+                { name: "Jodhpur", lat: 26.2389, lon: 73.0243 },
+                { name: "Udaipur", lat: 24.5854, lon: 73.7125 }
+            ],
+            "Karnataka": [
+                { name: "Bengaluru", lat: 12.9716, lon: 77.5946 },
+                { name: "Mysuru", lat: 12.2958, lon: 76.6394 },
+                { name: "Hubballi", lat: 15.3647, lon: 75.1240 }
+            ]
+        };
+
+        const cropDatabase = [
+            {
+                id: "soybean",
+                names: { en: "Soybean", hi: "सोयाबीन", mr: "सोयाबीन" },
+                season: "Kharif",
+                soil: ["Clay", "Loam", "Clay Loam"],
+                minPh: 6.0, maxPh: 7.5,
+                minRain: 500, maxRain: 1000,
+                N: 20, P: 60, K: 40,
+                yield: 800, price: 45, cost: 12000,
+                risk: "Low", demand: "High",
+                tip: { en: "Intercrop with Tur for better soil health.", hi: "बेहतर मिट्टी के स्वास्थ्य के लिए अरहर के साथ अंतरफसल करें।", mr: "मातीच्या चांगल्या आरोग्यासाठी तूर सोबत आंतरपीक घ्या." }
+            },
+            {
+                id: "cotton",
+                names: { en: "Cotton", hi: "कपास", mr: "कापूस" },
+                season: "Kharif",
+                soil: ["Black Cotton", "Clay", "Loam"],
+                minPh: 5.5, maxPh: 8.0,
+                minRain: 500, maxRain: 700,
+                N: 100, P: 50, K: 50,
+                yield: 1000, price: 60, cost: 25000,
+                risk: "Medium", demand: "High",
+                tip: { en: "Monitor for bollworm; ensure good drainage.", hi: "सुंडी पर नज़र रखें; अच्छी जल निकासी सुनिश्चित करें।", mr: "बोंडअळीवर लक्ष ठेवा; पाण्याचा निचरा चांगला होईल याची खात्री करा." }
+            },
+            {
+                id: "wheat",
+                names: { en: "Wheat", hi: "गेहूँ", mr: "गहू" },
+                season: "Rabi",
+                soil: ["Loam", "Clay Loam", "Sandy Loam"],
+                minPh: 6.0, maxPh: 7.0,
+                minRain: 300, maxRain: 600,
+                N: 120, P: 60, K: 40,
+                yield: 1500, price: 22, cost: 15000,
+                risk: "Low", demand: "High",
+                tip: { en: "Requires 4-5 irrigations at critical stages.", hi: "महत्वपूर्ण चरणों में 4-5 सिंचाई की आवश्यकता होती है।", mr: "महत्त्वाच्या टप्प्यांवर ४-५ वेळा पाणी द्यावे लागते." }
+            },
+            {
+                id: "pigeon_pea",
+                names: { en: "Pigeon Pea (Tur)", hi: "अरहर (तूर)", mr: "तूर" },
+                season: "Kharif",
+                soil: ["Loam", "Sandy Loam"],
+                minPh: 6.5, maxPh: 7.5,
+                minRain: 600, maxRain: 900,
+                N: 20, P: 50, K: 20,
+                yield: 600, price: 65, cost: 10000,
+                risk: "Low", demand: "High",
+                tip: { en: "Drought resistant, good for soil nitrogen fixation.", hi: "सूखा प्रतिरोधी, मिट्टी के नाइट्रोजन स्थिरीकरण के लिए अच्छा है।", mr: "दुष्काळ प्रतिरोधक, मातीत नत्र स्थिरीकरणासाठी चांगले." }
+            },
+            {
+                id: "chickpea",
+                names: { en: "Chickpea (Gram)", hi: "चना", mr: "हरभरा" },
+                season: "Rabi",
+                soil: ["Sandy Loam", "Loam"],
+                minPh: 6.0, maxPh: 7.0,
+                minRain: 250, maxRain: 400,
+                N: 20, P: 60, K: 20,
+                yield: 800, price: 50, cost: 12000,
+                risk: "Low", demand: "High",
+                tip: { en: "Avoid excessive irrigation to prevent wilt.", hi: "उकठा रोग से बचने के लिए अत्यधिक सिंचाई से बचें।", mr: "मर रोग टाळण्यासाठी जास्त पाणी देणे टाळा." }
+            },
+            {
+                id: "mustard",
+                names: { en: "Mustard", hi: "सरसों", mr: "मोहरी" },
+                season: "Rabi",
+                soil: ["Sandy Loam", "Loam"],
+                minPh: 6.0, maxPh: 7.5,
+                minRain: 200, maxRain: 400,
+                N: 60, P: 40, K: 40,
+                yield: 700, price: 55, cost: 10000,
+                risk: "Low", demand: "Medium",
+                tip: { en: "Highly profitable with minimal water requirement.", hi: "न्यूनतम पानी की आवश्यकता के साथ अत्यधिक लाभदायक।", mr: "कमीत कमी पाण्याच्या आवश्यकतेसह अत्यंत फायदेशीर." }
+            },
+            {
+                id: "maize",
+                names: { en: "Maize", hi: "मक्का", mr: "मका" },
+                season: "Kharif",
+                soil: ["Loam", "Sandy Loam"],
+                minPh: 5.5, maxPh: 7.5,
+                minRain: 500, maxRain: 800,
+                N: 120, P: 60, K: 40,
+                yield: 1800, price: 18, cost: 16000,
+                risk: "Medium", demand: "High",
+                tip: { en: "Very sensitive to waterlogging.", hi: "जलभराव के प्रति बहुत संवेदनशील।", mr: "पाणी साचल्यास अत्यंत संवेदनशील." }
+            },
+            {
+                id: "groundnut",
+                names: { en: "Groundnut", hi: "मूंगफली", mr: "भुईमूग" },
+                season: "Kharif",
+                soil: ["Sandy", "Sandy Loam"],
+                minPh: 6.0, maxPh: 6.5,
+                minRain: 500, maxRain: 700,
+                N: 20, P: 50, K: 30,
+                yield: 1000, price: 55, cost: 18000,
+                risk: "Medium", demand: "High",
+                tip: { en: "Requires loose soil for proper pod formation.", hi: "फली बनने के लिए भुरभुरी मिट्टी की आवश्यकता होती है।", mr: "शेंगा योग्य प्रकारे तयार होण्यासाठी भुसभुशीत माती आवश्यक आहे." }
+            },
+            {
+                id: "turmeric",
+                names: { en: "Turmeric", hi: "हल्दी", mr: "हळद" },
+                season: "Kharif",
+                soil: ["Loam", "Clay Loam"],
+                minPh: 5.0, maxPh: 7.5,
+                minRain: 1200, maxRain: 2500,
+                N: 120, P: 50, K: 100,
+                yield: 2500, price: 90, cost: 40000,
+                risk: "High", demand: "High",
+                tip: { en: "Requires excellent drainage; high investment but high return.", hi: "उत्कृष्ट जल निकासी की आवश्यकता है; उच्च निवेश लेकिन उच्च रिटर्न।", mr: "पाण्याचा उत्तम निचरा आवश्यक; जास्त गुंतवणूक पण जास्त परतावा." }
+            },
+            {
+                id: "sugarcane",
+                names: { en: "Sugarcane", hi: "गन्ना", mr: "ऊस" },
+                season: "Kharif",
+                soil: ["Loam", "Clay Loam"],
+                minPh: 6.5, maxPh: 7.5,
+                minRain: 1500, maxRain: 2500,
+                N: 150, P: 60, K: 60,
+                yield: 30000, price: 3, cost: 45000,
+                risk: "Low", demand: "Very High",
+                tip: { en: "Needs assured irrigation throughout the year.", hi: "साल भर सुनिश्चित सिंचाई की जरूरत है।", mr: "वर्षभर खात्रीशीर सिंचनाची आवश्यकता असते." }
+            }
+        ];
+
+        const soilTypes = ["Loam", "Sandy Loam", "Clay Loam", "Clay", "Sandy", "Black Cotton"];
+
+        // ═══════════════════════════════════════
+        // Recommendation Engine Logic
+        // ═══════════════════════════════════════
+        const scoreCropAgainstField = (crop, field) => {
+            let score = 0;
+            let details = [];
+
+            // 1. Soil Match (28%)
+            if (crop.soil.includes(field.soilType)) {
+                score += 28;
+            } else {
+                score += 10; // Partial fit
+            }
+
+            // 2. Climate/Rainfall Fit (24%)
+            const rain = parseInt(field.rain);
+            if (rain >= crop.minRain && rain <= crop.maxRain) {
+                score += 24;
+            } else if (field.irrigation === "Yes" && rain < crop.minRain) {
+                score += 20; // Irrigation compensates
+            } else {
+                score += 5;
+            }
+
+            // 3. Season Fit (14%)
+            if (crop.season === field.season) {
+                score += 14;
+            }
+
+            // 4. pH Fit (10%)
+            const ph = parseFloat(field.ph);
+            if (ph >= crop.minPh && ph <= crop.maxPh) {
+                score += 10;
+            }
+
+            // 5. Demand (16%)
+            if (crop.demand === "Very High") score += 16;
+            else if (crop.demand === "High") score += 12;
+            else score += 8;
+
+            // 6. Risk (8%)
+            if (crop.risk === "Low") score += 8;
+            else if (crop.risk === "Medium") score += 5;
+            else score += 2;
+
+            return {
+                ...crop,
+                score: Math.min(Math.round(score), 99),
+                netProfit: (crop.yield * crop.price) - crop.cost
+            };
+        };
+
+        // ═══════════════════════════════════════
+        // Components
+        // ═══════════════════════════════════════
+
+        const Hero = ({ t }) => (
+            <section className="container hero">
+                <div>
+                    <div className="hero-badge">
+                        <span className="live-dot"></span>
+                        {t.heroBadge}
+                    </div>
+                    <h1>
+                        <span className="gradient-text">{t.heroTitle.split(',')[0]},</span><br/>
+                        {t.heroTitle.split(',')[1]}
+                    </h1>
+                    <p>{t.heroSub}</p>
+                    <button className="btn-primary" onClick={() => document.getElementById('ai-engine').scrollIntoView()}>
+                        {t.ctaStart}
+                    </button>
+                    
+                    <div className="stats-row">
+                        <div className="stat-item">
+                            <h4>{t.statsFarmers}</h4>
+                            <p>{t.statsFarmersLbl}</p>
+                        </div>
+                        <div className="stat-item">
+                            <h4>{t.statsCrops}</h4>
+                            <p>{t.statsCropsLbl}</p>
+                        </div>
+                        <div className="stat-item">
+                            <h4>{t.statsDistricts}</h4>
+                            <p>{t.statsDistrictsLbl}</p>
+                        </div>
+                    </div>
+                </div>
+                <div style={{ position: 'relative' }}>
+                    <div className="glass-card" style={{ transform: 'rotate(2deg)', zIndex: 2, position: 'relative' }}>
+                        <div className="flex-between mb-4">
+                            <span className="badge badge-risk-low">Top Match</span>
+                            <span className="text-muted text-sm">Now</span>
+                        </div>
+                        <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Soybean + Tur</h3>
+                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+                            <div className="score-circle score-excellent">94%</div>
+                            <div>
+                                <div className="text-muted text-sm">Est. Net Profit</div>
+                                <div style={{ color: 'var(--emerald)', fontWeight: 'bold' }}>₹28,500/acre</div>
+                            </div>
+                        </div>
+                        <p className="text-sm text-muted">AI insight: Perfect soil pH match and intercropping reduces pest risk.</p>
+                    </div>
+                    {/* Decorative blur behind card */}
+                    <div style={{ position: 'absolute', top: '20%', left: '20%', width: '60%', height: '60%', background: 'var(--emerald)', filter: 'blur(80px)', opacity: 0.2, zIndex: 1 }}></div>
+                </div>
+            </section>
+        );
+
+        // ═══════════════════════════════════════
+        // App Main
+        // ═══════════════════════════════════════
+        const App = () => {
+            const [lang, setLang] = useState('en');
+            const t = i18n[lang];
+
+            // AI Engine State
+            const [fieldData, setFieldData] = useState({
+                state: '', district: '',
+                soilType: 'Loam', ph: 6.5, rain: 800,
+                season: 'Kharif', irrigation: 'Yes',
+                n: 50, p: 50, k: 50
+            });
+            const [isAnalyzing, setIsAnalyzing] = useState(false);
+            const [results, setResults] = useState(null);
+
+            // Weather State
+            const [weather, setWeather] = useState(null);
+            
+            // Handle recommendation
+            const runRecommendation = () => {
+                setIsAnalyzing(true);
+                setTimeout(() => {
+                    const scored = cropDatabase
+                        .map(c => scoreCropAgainstField(c, fieldData))
+                        .sort((a, b) => b.score - a.score)
+                        .slice(0, 4);
+                    setResults(scored);
+                    setIsAnalyzing(false);
+                    
+                    // Fetch weather based on district selection
+                    if(fieldData.state && fieldData.district) {
+                        const loc = locationsData[fieldData.state].find(d => d.name === fieldData.district);
+                        if(loc) fetchWeather(loc.lat, loc.lon);
+                    }
+                }, 1500); // simulate API delay
+            };
+
+            const fetchWeather = async (lat, lon) => {
+                try {
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+                    const data = await res.json();
+                    
+                    // Format for chart
+                    const chartData = data.daily.time.slice(0,7).map((time, i) => ({
+                        day: new Date(time).toLocaleDateString(lang, {weekday: 'short'}),
+                        max: data.daily.temperature_2m_max[i],
+                        min: data.daily.temperature_2m_min[i]
+                    }));
+
+                    setWeather({ current: data.current, forecast: chartData });
+                } catch(e) {
+                    console.error("Weather fetch failed", e);
+                }
+            };
+
+            // Market Data Mock
+            const marketData = [
+                { month: 'Jan', soybean: 42, cotton: 55 },
+                { month: 'Feb', soybean: 43, cotton: 57 },
+                { month: 'Mar', soybean: 41, cotton: 56 },
+                { month: 'Apr', soybean: 45, cotton: 59 },
+                { month: 'May', soybean: 46, cotton: 60 },
+                { month: 'Jun', soybean: 45, cotton: 62 },
+            ];
+
+            return (
+                <div>
+                    <nav className="container">
+                        <div className="brand">
+                            <span style={{color: 'var(--emerald)'}}>✿</span> {t.brand}
+                        </div>
+                        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                            <div className="lang-switch">
+                                <select value={lang} onChange={(e) => setLang(e.target.value)}>
+                                    <option value="en">English</option>
+                                    <option value="hi">हिन्दी</option>
+                                    <option value="mr">मराठी</option>
+                                </select>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <Hero t={t} />
+
+                    <div className="section-divider"></div>
+
+                    {/* AI Engine Section */}
+                    <section id="ai-engine" className="container" style={{ padding: '2rem 0' }}>
+                        <div className="text-center mb-8">
+                            <h2>{t.secAI}</h2>
+                            <p className="text-muted">{t.secAI_sub}</p>
+                        </div>
+
+                        <div className="grid-2">
+                            {/* Input Form */}
+                            <div className="glass-card">
+                                <div className="grid-2">
+                                    <div className="input-group">
+                                        <label>{t.lblState}</label>
+                                        <select value={fieldData.state} onChange={e => setFieldData({...fieldData, state: e.target.value, district: ''})}>
+                                            <option value="">-- {t.lblState} --</option>
+                                            {Object.keys(locationsData).map(s => <option key={s} value={s}>{s}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="input-group">
+                                        <label>{t.lblDistrict}</label>
+                                        <select value={fieldData.district} onChange={e => setFieldData({...fieldData, district: e.target.value})} disabled={!fieldData.state}>
+                                            <option value="">-- {t.lblDistrict} --</option>
+                                            {fieldData.state && locationsData[fieldData.state].map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="grid-2">
+                                    <div className="input-group">
+                                        <label>{t.lblSoil}</label>
+                                        <select value={fieldData.soilType} onChange={e => setFieldData({...fieldData, soilType: e.target.value})}>
+                                            {soilTypes.map(s => <option key={s} value={s}>{s}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="input-group">
+                                        <label>{t.lblSeason}</label>
+                                        <select value={fieldData.season} onChange={e => setFieldData({...fieldData, season: e.target.value})}>
+                                            <option value="Kharif">{t.seasonKharif}</option>
+                                            <option value="Rabi">{t.seasonRabi}</option>
+                                            <option value="Zaid">{t.seasonZaid}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="input-group">
+                                    <label>{t.lblPh}: {fieldData.ph}</label>
+                                    <input type="range" min="4" max="9" step="0.1" value={fieldData.ph} onChange={e => setFieldData({...fieldData, ph: e.target.value})} />
+                                </div>
+
+                                <div className="input-group">
+                                    <label>{t.lblRain}: {fieldData.rain} mm</label>
+                                    <input type="range" min="100" max="3000" step="50" value={fieldData.rain} onChange={e => setFieldData({...fieldData, rain: e.target.value})} />
+                                </div>
+
+                                <div className="input-group">
+                                    <label>{t.lblIrrigation}</label>
+                                    <select value={fieldData.irrigation} onChange={e => setFieldData({...fieldData, irrigation: e.target.value})}>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+
+                                <button className="btn-primary" style={{ width: '100%', marginTop: '1rem' }} onClick={runRecommendation} disabled={isAnalyzing}>
+                                    {isAnalyzing ? <><div className="spinner"></div> {t.btnRunning}</> : t.btnRunAI}
+                                </button>
+                            </div>
+
+                            {/* Results Area */}
+                            <div>
+                                {results ? (
+                                    <div>
+                                        <h3 className="mb-4">{t.resTop}</h3>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                            {results.map((crop, idx) => (
+                                                <div key={idx} className="glass-card" style={{ padding: '1rem', borderLeft: `4px solid ${idx === 0 ? 'var(--emerald)' : 'var(--border-card)'}` }}>
+                                                    <div className="flex-between mb-2">
+                                                        <h4 style={{ fontSize: '1.25rem' }}>{crop.names[lang]}</h4>
+                                                        <div className={`score-circle ${crop.score >= 80 ? 'score-excellent' : 'score-good'}`} style={{ width: 40, height: 40, fontSize: '0.875rem' }}>
+                                                            {crop.score}%
+                                                        </div>
+                                                    </div>
+                                                    <div className="grid-3 mb-2" style={{ gap: '0.5rem' }}>
+                                                        <div>
+                                                            <div className="text-sm text-muted">{t.resProfit}</div>
+                                                            <div style={{ color: 'var(--emerald)', fontWeight: 'bold' }}>₹{crop.netProfit.toLocaleString()}/ac</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-sm text-muted">{t.resRisk}</div>
+                                                            <div>{crop.risk}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-sm text-muted">{t.resDemand}</div>
+                                                            <div>{crop.demand}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-sm" style={{ background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '0.25rem' }}>
+                                                        <strong>{t.resTip}:</strong> {crop.tip[lang]}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="glass-card" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', color: 'var(--text-muted)' }}>
+                                        <div>
+                                            <div style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.5 }}>🌾</div>
+                                            <p>{t.secAI_sub}</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </section>
+
+                    <div className="section-divider"></div>
+
+                    {/* Data Dashboards */}
+                    <section className="container" style={{ padding: '2rem 0' }}>
+                        <div className="grid-2">
+                            
+                            {/* Weather */}
+                            <div className="glass-card">
+                                <h3 className="mb-2">{t.secWeather}</h3>
+                                <p className="text-muted text-sm mb-4">{t.secWeather_sub}</p>
+                                
+                                {weather ? (
+                                    <>
+                                        <div className="flex-between mb-6" style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '0.5rem' }}>
+                                            <div className="text-center">
+                                                <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>{weather.current.temperature_2m}°C</div>
+                                                <div className="text-sm text-muted">{t.weatherTemp}</div>
+                                            </div>
+                                            <div className="text-center">
+                                                <div style={{ fontSize: '1.25rem' }}>{weather.current.relative_humidity_2m}%</div>
+                                                <div className="text-sm text-muted">{t.weatherHum}</div>
+                                            </div>
+                                            <div className="text-center">
+                                                <div style={{ fontSize: '1.25rem' }}>{weather.current.wind_speed_10m} km/h</div>
+                                                <div className="text-sm text-muted">{t.weatherWind}</div>
+                                            </div>
+                                        </div>
+                                        <div style={{ height: 200, width: '100%' }}>
+                                            <ResponsiveContainer>
+                                                <LineChart data={weather.forecast}>
+                                                    <XAxis dataKey="day" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                                                    <Tooltip contentStyle={{ background: 'var(--bg-base)', border: '1px solid var(--border-card)' }} />
+                                                    <Line type="monotone" dataKey="max" stroke="var(--orange)" strokeWidth={2} dot={{r:4}} />
+                                                    <Line type="monotone" dataKey="min" stroke="var(--sky)" strokeWidth={2} dot={{r:4}} />
+                                                </LineChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="text-muted">
+                                        Select location and run analysis to view local weather.
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Market Trends */}
+                            <div className="glass-card">
+                                <h3 className="mb-2">{t.secMarket}</h3>
+                                <p className="text-muted text-sm mb-4">{t.secMarket_sub}</p>
+                                <div style={{ height: 280, width: '100%' }}>
+                                    <ResponsiveContainer>
+                                        <LineChart data={marketData}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                                            <XAxis dataKey="month" stroke="var(--text-muted)" fontSize={12} />
+                                            <YAxis stroke="var(--text-muted)" fontSize={12} tickFormatter={(val) => `₹${val}`} />
+                                            <Tooltip contentStyle={{ background: 'var(--bg-base)', border: '1px solid var(--border-card)' }} />
+                                            <Line type="monotone" dataKey="soybean" name="Soybean (₹/kg)" stroke="var(--emerald)" strokeWidth={2} />
+                                            <Line type="monotone" dataKey="cotton" name="Cotton (₹/kg)" stroke="var(--gold)" strokeWidth={2} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    {/* Soil Health (Radar) & Calc */}
+                    <section className="container" style={{ padding: '2rem 0' }}>
+                        <div className="grid-2">
+                            
+                            <div className="glass-card">
+                                <h3 className="mb-2">{t.secSoil}</h3>
+                                <p className="text-muted text-sm mb-4">{t.secSoil_sub}</p>
+                                <div style={{ height: 300, width: '100%' }}>
+                                    <ResponsiveContainer>
+                                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
+                                            { subject: 'pH', A: 80, fullMark: 100 },
+                                            { subject: 'Nitrogen', A: 60, fullMark: 100 },
+                                            { subject: 'Phosphorus', A: 75, fullMark: 100 },
+                                            { subject: 'Potassium', A: 65, fullMark: 100 },
+                                            { subject: 'Org. Carbon', A: 45, fullMark: 100 },
+                                            { subject: 'Moisture', A: 70, fullMark: 100 }
+                                        ]}>
+                                            <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                                            <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-muted)', fontSize: 12 }} />
+                                            <Radar name="Field" dataKey="A" stroke="var(--emerald)" fill="var(--emerald)" fillOpacity={0.4} />
+                                        </RadarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+
+                            <div className="glass-card">
+                                <h3 className="mb-2">{t.secCalc}</h3>
+                                <div className="grid-2 mt-4">
+                                    <div className="input-group">
+                                        <label>{t.lblLand}</label>
+                                        <input type="number" defaultValue="5" id="c_land" />
+                                    </div>
+                                    <div className="input-group">
+                                        <label>{t.lblYield}</label>
+                                        <input type="number" defaultValue="800" id="c_yield" />
+                                    </div>
+                                    <div className="input-group">
+                                        <label>{t.lblPrice}</label>
+                                        <input type="number" defaultValue="45" id="c_price" />
+                                    </div>
+                                    <div className="input-group">
+                                        <label>{t.lblCost}</label>
+                                        <input type="number" defaultValue="12000" id="c_cost" />
+                                    </div>
+                                </div>
+                                <button className="btn-primary mb-6" style={{width: '100%'}} onClick={() => {
+                                    const l = parseFloat(document.getElementById('c_land').value);
+                                    const y = parseFloat(document.getElementById('c_yield').value);
+                                    const p = parseFloat(document.getElementById('c_price').value);
+                                    const c = parseFloat(document.getElementById('c_cost').value);
+                                    
+                                    const gross = l * y * p;
+                                    const cost = l * c;
+                                    const net = gross - cost;
+                                    const roi = ((net / cost) * 100).toFixed(1);
+                                    
+                                    document.getElementById('calc_res_gross').innerText = `₹${gross.toLocaleString()}`;
+                                    document.getElementById('calc_res_net').innerText = `₹${net.toLocaleString()}`;
+                                    document.getElementById('calc_res_roi').innerText = `${roi}%`;
+                                }}>Calculate</button>
+
+                                <div className="flex-between" style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '0.5rem' }}>
+                                    <div>
+                                        <div className="text-sm text-muted">{t.calcGross}</div>
+                                        <div id="calc_res_gross" style={{ fontWeight: 'bold' }}>₹1,80,000</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-sm text-muted">{t.calcNet}</div>
+                                        <div id="calc_res_net" style={{ color: 'var(--emerald)', fontWeight: 'bold', fontSize: '1.25rem' }}>₹1,20,000</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-sm text-muted">{t.calcROI}</div>
+                                        <div id="calc_res_roi" style={{ fontWeight: 'bold' }}>200.0%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </section>
+
+                    {/* About Features */}
+                    <section className="container" style={{ padding: '4rem 0' }}>
+                        <div className="text-center mb-8">
+                            <h2>{t.aboutTitle}</h2>
+                        </div>
+                        <div className="grid-3">
+                            <div className="glass-card">
+                                <div className="icon-box mb-4">🌦️</div>
+                                <h4>{t.feat1}</h4>
+                                <p className="text-sm text-muted mt-2">{t.feat1d}</p>
+                            </div>
+                            <div className="glass-card">
+                                <div className="icon-box mb-4">🌍</div>
+                                <h4>{t.feat2}</h4>
+                                <p className="text-sm text-muted mt-2">{t.feat2d}</p>
+                            </div>
+                            <div className="glass-card">
+                                <div className="icon-box mb-4">📈</div>
+                                <h4>{t.feat3}</h4>
+                                <p className="text-sm text-muted mt-2">{t.feat3d}</p>
+                            </div>
+                        </div>
+                        <p className="text-center text-sm mt-8" style={{ color: 'var(--orange)' }}>
+                            {t.disclaimer}
+                        </p>
+                    </section>
+
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
