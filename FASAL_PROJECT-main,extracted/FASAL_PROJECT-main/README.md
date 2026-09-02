@@ -4,7 +4,6 @@ An AI-assisted platform that recommends crop diversification strategies from
 soil, climate, and market data — in **English, Hindi, and Marathi**.
 
 ## What's inside
-
 ```
 agri-ai/
 ├── frontend/
