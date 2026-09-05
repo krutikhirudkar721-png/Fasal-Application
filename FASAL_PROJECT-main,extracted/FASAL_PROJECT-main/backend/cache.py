@@ -14,4 +14,3 @@ def cache_get(key: str, ttl_seconds: Optional[int] = None) -> Optional[Any]:
 
 def cache_set(key: str, value: Any, ttl_seconds: int = 600) -> None:
     _cache[key] = (time.time(), ttl_seconds, value)
-
