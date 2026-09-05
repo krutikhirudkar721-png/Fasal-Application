@@ -1,1 +1,1 @@
-# This repository is about the hackthon project  
+# This repository is about the project named FASAL based on agriculture  
