@@ -4,7 +4,6 @@ backend/database_users.py
 User / Farmer persistence helper for FASAL's auth and community routes.
 Backed by fasal.db SQLite database.
 """
-
 import sqlite3
 import os
 from typing import Optional
