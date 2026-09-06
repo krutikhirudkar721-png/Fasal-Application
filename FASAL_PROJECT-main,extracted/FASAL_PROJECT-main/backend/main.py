@@ -10,7 +10,6 @@ FASAL Core Production Application Server:
 - Global Error & Exception Handling
 - Database initialization and snapshot backup support
 """
-
 import os
 import time
 import uuid
