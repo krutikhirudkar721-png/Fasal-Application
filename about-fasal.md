@@ -3,7 +3,6 @@
 > **From Data → Decision → Action**
 
 FASAL is a smart agriculture platform designed to help farmers make better and faster farming decisions by bringing important agricultural information together in one place.
-
 Farmers often have to check different sources for **soil conditions, weather, crop health, mandi prices, government schemes, labour and machinery**. FASAL combines these inputs and converts them into simple, actionable recommendations.
 
 ---
