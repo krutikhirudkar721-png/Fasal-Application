@@ -87,7 +87,6 @@ async def init_db():
             row = await cursor.fetchone()
             if row[0] == 0:
                 await seed_data(db)
-        
         await db.commit()
 
 async def seed_data(db):
